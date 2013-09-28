@@ -1,0 +1,10 @@
+﻿@using Lightning
+@{
+	this.Layout = "_Layout.cshtml";
+
+	dynamic requestData = Utilities.GetRequestData(this.Context);
+	this.Page.Title = requestData.Content.Title;
+}
+<article>
+	@Html.Raw(requestData.Content.GetContent(requestData.Content))
+</article>

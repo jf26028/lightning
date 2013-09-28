@@ -1,0 +1,33 @@
+﻿/*
+humanstxt.org
+The humans responsible & technology used.
+*/
+
+/* POWERED BY */
+	Lightning:  http://lightning.simpdev.net/
+
+/* TEAM */
+	Jesse Foster - Lightning Creator
+	Contact:  my name at gmail
+	Twitter:  @jf26028
+	From:  New Braunfels, TX, USA
+	Web:  http://simpdev.net/
+
+/* THANKS */
+
+/* SITE */
+	Last update:  2013-09-22
+	Standards:  html5, css3
+	Language:  English
+	Built With:  Visual Studio
+
+/* COMPONENTS */
+	MarkdownSharp:  https://code.google.com/p/markdownsharp/
+	Bootstrap:  http://getbootstrap.com/
+	ASP.net WebPages:  http://www.asp.net/web-pages/
+	Font Awesome by Dave Gandy:  http://fontawesome.io/
+
+/* LICENSE */
+	Code:  Apache 2.0 - http://opensource.org/licenses/apache2.0
+	Content:  CC BY 3.0 - http://creativecommons.org/licenses/by/3.0/
+

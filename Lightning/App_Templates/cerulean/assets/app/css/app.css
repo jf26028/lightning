@@ -1,0 +1,62 @@
+﻿
+
+/* footer styles */
+#footer {
+  text-align: center;
+  padding: 30px 0;
+  border-top: 1px solid #e5e5e5;
+  background-color: #f5f5f5;
+}
+#footer p {
+  margin-bottom: 0;
+  color: #777;
+}
+.footer-links {
+  margin: 10px 0;
+}
+.footer-links li {
+  display: inline;
+  padding: 0 2px;
+}
+.footer-links li:first-child {
+  padding-left: 0;
+}
+
+/* sticky footer */
+html,
+body {
+  height: 100%;
+  /* The html and body elements cannot have any padding or margin. */
+}
+
+/* Wrapper for page content to push down footer */
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  /* Negative indent footer by its height */
+  margin: 0 auto -120px;
+  /* Pad bottom by footer height */
+  padding: 0 0 120px;
+}
+
+/* Set the fixed height of the footer here */
+#footer {
+  height: 120px;
+}
+
+
+/* todo:  media query here to make the padding bigger on smaller pages. */
+#wrap > .container {
+  padding: 60px 15px 0;
+}
+
+#footer > .container {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+code {
+  font-size: 80%;
+}
+
