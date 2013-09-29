@@ -22,7 +22,7 @@ Position:  1
 	* The code:  Small, concise and clean.
 	* Content:  Flat files.  Publish via ftp, dropbox, file share, xcopy, etc.
 	* Deployment:  Deploy from source, ftp, dropbox, file share, xcopy, etc.  Simply as possible.
-	* Ui:  Templates based on razor.  Full flexibility.
+	* Ui:  Templates use razor to offer full flexibility.
 * Speed.
 	* Execution:  Less code means less cpu.
 	* Caching:  Cache as much processing as possible.  Cache content reading and parsing.  Cache content processing.
