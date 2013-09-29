@@ -5,7 +5,7 @@ Menu:  Home
 Enabled:  true
 Position:  1
 
-#<img src="/media/lightning-144.png" height="64" style="margin: 0 0 0 -10px" alt="Lightning" title="Lightning" />Lightning
+#<img src="/media/host_localhost_51985/lightning-144.png" height="64" style="margin: 0 0 0 -10px" alt="Lightning" title="Lightning" />Lightning
 ## A micro toolkit to simplify getting your content on your site.
 
 ###What is Lightning?
