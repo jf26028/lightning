@@ -5,18 +5,22 @@ Menu:  Home
 Enabled:  true
 Position:  1
 
-#<img src="/media/host_localhost_51985/lightning-144.png" height="64" style="margin: 0 0 0 -10px" alt="Lightning" title="Lightning" />Lightning
-## A micro toolkit to simplify getting your content on your site.
+<div class="page-header">
+	<h1><img src="/media/host_localhost_51985/lightning-144.png" height="64" style="margin: 0 0 0 -10px" alt="Lightning" title="Lightning" />Lightning <small> - Following the path of least resistance.</small>
+</div>
 
-###What is Lightning?
+##What is Lightning?
 
-* A simple and flexible way to get your content on your site, without getting in your way.
+Lightning is a micro toolkit to simplify getting your content on your site, without getting in your way.  <b>Lightning is open source and free.</b>
+
+It is made up of:
+
 * An asp.net module to identify your content.
 * Flat files to store your content.
 * Markdown to parse your content.
 * Razor to render your content.
 
-###Features
+##Features
 
 * Simplicity.
 	* The code:  Small, concise and clean.
@@ -27,20 +31,18 @@ Position:  1
 	* Execution:  Less code means less cpu.
 	* Caching:  Cache as much processing as possible.  Cache content reading and parsing.  Cache content processing.
 
-###How does Lightning work?
+##To do
 
-* Lightning is implemented as an asp.net http module.  When a request is made for content, the asp.net pipeline is interrupted, and the content is served.
-* Content is stored as markdown files in the website, by default, with extension points to allow for other methods of uploading content to the site.
-* Files are parsed once, and cached, so greater performance is achieved.  Cache is invalidated on file change, so changes are displayed instantly.
+There is lots to do.
 
-###To do
+* More testing.  There is no automated testing.
+* More templates.  Give Lightning more style.
+* More docs.  Define what Lightning can do.
+* More examples.  Show how much power this simple toolkit has to offer.
+* More everything.  The sky is the limit.
 
-* More testing.
-* More templates.
-* More docs.
-* More info.
-* More everything.
+##License
 
-###License
+Free for commercial and private use.
 
 * Apache 2.0

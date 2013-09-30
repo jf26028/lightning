@@ -9,6 +9,10 @@ Position:  200
   <li class="active">Getting Started</li>
 </ol>
 
+<div class="alert alert-warning">
+	<strong>Warning</strong>  Alot of this is (already) out of date, or incomplete.  Updates are coming.
+</div>
+
 #Getting Started
 
 ###Download and hit F5
