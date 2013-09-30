@@ -12,6 +12,10 @@ Keywords:  lightning,documentation,page,metadata,templates,configuration,content
   <li class="active">Documentation</li>
 </ol>
 
+<div class="alert alert-warning">
+	<strong>Warning</strong>  Alot of this is (already) out of date, or incomplete.  Updates are coming.
+</div>
+
 #Documentation
 
 The documentation has been split into two categories, for two different audiences.

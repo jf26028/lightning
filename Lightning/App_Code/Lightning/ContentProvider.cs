@@ -1,95 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
-using System.Web.Configuration;
-using System.Web.Hosting;
+using System.Web;
+using System.Web.Caching;
 
 namespace Lightning
 {
 	public interface IContentProvider
 	{
 		// Fetch all contents from the content store.
-		List<dynamic> GetContents(string physicalPath);
+		List<dynamic> GetContents(HttpContextBase httpContext);
 	}
 
 	// File system content provider implementation.
-	// Fetches all content files from the '~/App_Data/content/' folder, by default.
 	public class ReadOnlyFileSystemContentProvider : IContentProvider
 	{
-		// Fetch all files in the virtual path (top level only) and parses those files into dynamic objects.
-		public List<dynamic> GetContents(string physicalPath)
+		private static readonly object _lock = new object();
+
+		public List<dynamic> GetContents(HttpContextBase httpContext)
 		{
-			var filePaths = Directory.EnumerateFiles(physicalPath, "*.*", SearchOption.TopDirectoryOnly);
-			return filePaths.Select(filePath => this.parseFile(filePath)).ToList();
-		}
+			var hostKey = httpContext.GetHostKey();
+			var cacheKey = "__ReadOnlyFileSystemContentProvider_" + hostKey;
 
-		// Process the content of the file.  By default, this is done via a markdown parser.  MarkdownSharp is used in this instance.
-		private string processContent(string content)
-		{
-			// If you have a different processor in mind (or if you write your content in html and dont need a processor) this is the place to change that.
-			// Use "return content;" if you do not need a processor (if you write your content in html already).
-			return new MarkdownSharp.Markdown().Transform(content);
-		}
+			// todo:  Verify that there is no security issue here using host this way.  aka what if the host == "..\.." or something.
 
-		// Parse the file, extracting metadata from content.
-		private dynamic parseFile(string filePath)
-		{
-			// Content files are parsed into dynamic expando objects to allow for dynamic configuration with conventions for names.
-			dynamic contentFile = new ExpandoObject();
-			var dictionary = contentFile as IDictionary<string, object>;
+			var contents = (List<dynamic>)httpContext.Cache.Get(cacheKey);
 
-			// The logic here:
-			//
-			// * Read lines from the file.
-			// * Each line before a blank line is metadata in the format tag:data.
-			// * All lines after that are considered content.
-			//     Content is stored in the _content property.
-			//     Content is fetched via the GetContent method (as it can be processed by the system).
-			string[] lines = File.ReadAllLines(filePath);
-
-			for (int counter = 0; counter < lines.Length; counter++)
+			if (contents == null)
 			{
-				string line = lines[counter].Trim();
-
-				// The blank line separates the metadata from the file content.  
-				// Before the blank line, everything is metadata.  After the blank line is found, everything else in the file is considered content.
-				if (string.IsNullOrWhiteSpace(line.Trim()))
+				lock (_lock)
 				{
-					// The content is composed of all remaining lines.
-					contentFile._content = string.Join(Environment.NewLine, lines.Skip(counter + 1).ToArray());
-					contentFile._contentProcessed = null;
-
-					// This is an implementation of lazy processing with caching.
-					// The content is processed with markdown only when it needs to be, and the result is cached on the content object.
-					contentFile.GetContent = new Func<dynamic, string>(content =>
+					// two phase locking
+					contents = (List<dynamic>)httpContext.Cache.Get(cacheKey);
+					if (contents == null)
 					{
-						// If this content has not been processed previously, process it now and cache the output to prevent from processing the same text more than once to get the same output.
-						if (content._contentProcessed == null)
+						// The convention of this content provider is to look in the ~/App_Data/{host}/content folder for the content.
+						var contentVirtualPath = httpContext.GetHostPath("content/");
+						var contentPhysicalPath = httpContext.Server.MapPath(contentVirtualPath);
+
+						if (!Directory.Exists(contentPhysicalPath))
 						{
-							content._contentProcessed = this.processContent(content._content);
+							throw new Exception("No content found for host.  Host:  " + hostKey);
 						}
 
-						return content._contentProcessed;
-					});
+						contents = this.getContents(contentPhysicalPath);
+						int cacheTimeoutSeconds = httpContext.GetConfigurationValue("cacheTimeoutSeconds", 0);
 
-					break;
-				}
-				else
-				{
-					// Lines starting # are comments.  Do not process comments.
-					if (!line.StartsWith("#"))
-					{
-						string[] metaData = line.Split(":".ToCharArray(), 2);
-
-						// note:  this line prevents config values with empty spaces at the end.  For example, a padded string value.  This may not be what you want.
-						dictionary[metaData[0].Trim()] = metaData[1].Trim();
+						if (cacheTimeoutSeconds > 0)
+						{
+							// Add the contents to the cache, using all files in the app_data folder as the cache dependency.  If any app_data changes, the cache will be refreshed.  This may be bad for you if you put other data in the app_data folder.
+							httpContext.Cache.Insert(cacheKey, contents, new CacheDependency(Directory.GetDirectories(Path.Combine(contentPhysicalPath, ".."), "*", SearchOption.AllDirectories)), DateTime.UtcNow.AddSeconds(cacheTimeoutSeconds), Cache.NoSlidingExpiration);
+						}
 					}
 				}
 			}
 
-			return contentFile;
+			return contents;
+		}
+
+		// Fetch all files in the virtual path (top level only) and parses those files into dynamic objects.
+		private List<dynamic> getContents(string physicalPath)
+		{
+			var contentParser = this.getContentParser();
+			var filePaths = Directory.EnumerateFiles(physicalPath, "*.*", SearchOption.TopDirectoryOnly);
+			return filePaths.Select(filePath => contentParser.ParseContent(File.ReadLines(filePath).ToArray())).ToList();
+		}
+
+		private IContentParser getContentParser()
+		{
+			// If you would prefer a different content parser, this is where you new up your content parser.
+			return new ContentParser();
 		}
 	}
 }

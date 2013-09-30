@@ -14,6 +14,10 @@ Template:  default
   <li class="active">Configuration Documentation</li>
 </ol>
 
+<div class="alert alert-warning">
+	<strong>Warning</strong>  Alot of this is (already) out of date, or incomplete.  Updates are coming.
+</div>
+
 #Configuration Documentation
 
 ###web.config

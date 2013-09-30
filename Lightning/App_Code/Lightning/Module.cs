@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Dynamic;
-using System.IO;
 using System.Linq;
 using System.Web;
-using System.Web.Caching;
-using System.Web.Configuration;
 using System.Web.WebPages;
 
 namespace Lightning
@@ -13,6 +9,7 @@ namespace Lightning
 	// This HttpModule is the core of the lightning system.  This module is responsible for identifying if the request is to be handled by lightning or if it should let it fall through to asp.net.
 	public class Module : IHttpModule
 	{
+		// semver of the system.
 		public static readonly string Version = "1.0.0";
 
 		private readonly object _lock = new object();
@@ -33,85 +30,47 @@ namespace Lightning
 		{
 			var httpContext = new HttpContextWrapper(((HttpApplication)sender).Context);
 
-			var contents = this.getContents(httpContext);
+			var contents = this.getContentProvider().GetContents(httpContext);
 			var requestPath = httpContext.Request.AppRelativeCurrentExecutionFilePath.Substring(2).Split('/')[0];
 			var content = contents.FirstOrDefault(c => c.Slug.Equals(requestPath, StringComparison.OrdinalIgnoreCase));
-			
-			// If content matching the request was found
-			if (content != null)
-			{
-				var template = this.getTemplate(httpContext, content);
-				var templateVirtualPath = string.Format("~/App_Templates/{0}/_content.cshtml", template);
-				var handler = WebPageHttpHandler.CreateFromVirtualPath(templateVirtualPath);
 
+			if (content == null)
+			{
+				// Content for this request was not found.  Let asp.net handle this request.
+				return;
+			}
+
+			IHttpHandler handler = null;
+			var templates = new[] { Utilities.GetValue<string>(content, "Template", httpContext.GetConfigurationValue<string>("template", null) ?? "default"), "default" };
+
+			// for each possible template, try to create a handler.
+			foreach (var template in templates)
+			{
+				var templateVirtualPath = string.Format("~/App_Templates/{0}/_content.cshtml", template);
+				handler = WebPageHttpHandler.CreateFromVirtualPath(templateVirtualPath);
+
+				// If we successfully found a handler, use it.
 				if (handler != null)
 				{
-					// Set the request data
-					dynamic requestData = new ExpandoObject();
-					requestData.Contents = contents;
-					requestData.Content = content;
-
-					// Stash the request data for use by the handlers later.
-					Utilities.SetRequestData(httpContext, requestData);
-
-					// Let asp.net know we will handle this request.
-					httpContext.RemapHandler(handler);
+					break;
 				}
 			}
 
-			// Let asp.net handle this request.
-		}
-
-		private List<dynamic> getContents(HttpContextBase httpContext)
-		{
-			// Fetch all content from the cache.  If it is not in the cache, fetch the data and insert into the cache (using a CacheTimeoutSeconds = 0 will prevent caching).
-
-			var host = httpContext.GetHostKey();
-			var cacheKey = "__lightningContent_" + host;
-
-			// todo:  Verify that there is no security issue here using host this way.  aka what if the host == "..\.." or something.
-
-			var contents = (List<dynamic>)httpContext.Cache.Get(cacheKey);
-
-			if (contents == null)
+			if (handler == null)
 			{
-				lock (_lock)
-				{
-					// two phase locking
-					contents = (List<dynamic>)httpContext.Cache.Get(cacheKey);
-					if (contents == null)
-					{
-						var contentVirtualPath = httpContext.GetHostPath("content/");
-						var contentPhysicalPath = httpContext.Server.MapPath(contentVirtualPath);
-
-						if (!Directory.Exists(contentPhysicalPath))
-						{
-							throw new Exception("No content found for host.  Host:  " + host);
-						}
-
-						contents = this.getContentProvider().GetContents(contentPhysicalPath);
-						int cacheTimeoutSeconds = httpContext.GetConfigurationValue("cacheTimeoutSeconds", 0);
-
-						if (cacheTimeoutSeconds > 0)
-						{
-							// Add the contents to the cache, using all files in the app_data folder as the cache dependency.  If any app_data changes, the cache will be refreshed.  This may be bad for you if you put other data in the app_data folder.
-							httpContext.Cache.Insert(cacheKey, contents, new CacheDependency(Directory.GetDirectories(Path.Combine(contentPhysicalPath, ".."), "*", SearchOption.AllDirectories)), DateTime.UtcNow.AddSeconds(cacheTimeoutSeconds), Cache.NoSlidingExpiration);
-						}
-					}
-				}
+				throw new Exception("Content found, but no template available.");
 			}
 
-			return contents;
-		}
+			// Set the request data
+			dynamic requestData = new ExpandoObject();
+			requestData.Contents = contents;
+			requestData.Content = content;
 
-		private string getTemplate(HttpContextBase httpContext, dynamic content)
-		{
-			// If the content has a Template defined, use it.  Otherwise, default to the configured template.
+			// Stash the request data for use by the handlers later.
+			Utilities.SetRequestData(httpContext, requestData);
 
-			// todo:  verify that the template exists.
-			string template = Utilities.GetValue<string>(content, "Template", httpContext.GetConfigurationValue<string>("template", null) ?? "default");
-
-			return template;
+			// Let asp.net know we will handle this request.
+			httpContext.RemapHandler(handler);
 		}
 
 		private IContentProvider getContentProvider()

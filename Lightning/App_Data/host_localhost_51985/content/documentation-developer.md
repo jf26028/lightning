@@ -6,24 +6,16 @@ Position:  0
 Author:  Jesse Foster
 Description:  Lightning documentation for the developer.
 Keywords:  lightning,documentation,page,metadata,templates,configuration,content,module,toolkit
-#
-# Template (optional)
-#   If populated, this page will be rendered with the specified template.  If it is omitted, the default (configured) template will be used.
-Template:  default
-#
-# Url (optional)
-#   If populated, the menu will link to the url specified instead of a local page.
-# Url:  https://www.google.com/#q=lightning+asp.net
-#
-# Any additional key:value paris can be added here.  There is no limitation on the number you can add.
-# They can be useful in the template for conditional rendering or passing values from the content to the page.
-# The next line is a blank line, which triggers the rest of the file to be content.
 
 <ol class="breadcrumb">
   <li><a href="/">Home</a></li>
   <li><a href="/documentation">Documentation</a></li>
   <li class="active">Developer Documentation</li>
 </ol>
+
+<div class="alert alert-warning">
+	<strong>Warning</strong>  Alot of this is (already) out of date, or incomplete.  Updates are coming.
+</div>
 
 #Developer Documentation
 

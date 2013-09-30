@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
 using System.Web;
@@ -65,7 +64,7 @@ namespace Lightning
 
 		public static string GetHostKey(this HttpContextBase httpContext)
 		{
-			var key = httpContext.Request.Url == null ? "" : httpContext.Request.Url.Authority.Replace(":", "_");
+			var key = httpContext.Request.Url == null ? "" : httpContext.Request.Url.Authority.Replace(":", "_").Replace("..", "");
 			return key;
 		}
 
