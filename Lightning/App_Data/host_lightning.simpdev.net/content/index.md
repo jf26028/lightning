@@ -13,6 +13,8 @@ Position:  1
 
 Lightning is a micro toolkit to simplify getting your content on your site, without getting in your way.  <b>Lightning is open source and free.</b>
 
+<iframe width="640" height="480" src="//www.youtube.com/embed/rW7iEw6Zyys?rel=0" frameborder="0" allowfullscreen></iframe>
+
 It is made up of:
 
 * An asp.net module to identify your content.
