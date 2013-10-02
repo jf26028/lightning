@@ -1,8 +1,9 @@
-﻿@using System.Web.Configuration
-@using Lightning
+﻿@using Lightning
 @{
 	// Fetch the request data (from the http contect items collection).
 	dynamic requestData = Utilities.GetRequestData(this.Context);
+
+	var footer = ((IEnumerable<dynamic>)requestData.Contents).FirstOrDefault(c => c.Slug == "_footer");
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -73,18 +74,26 @@
 			</div>	
 
 		</div>
-		<div id="footer">
-			<div class="container">
-				<p>Code licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
-				<ul class="footer-links">
-					<li><a href="/humans.txt">Humans</a></li>
-					<li class="muted">&middot;</li>
-					<li><a href="http://simpdev.net/lightning">Powered By Lightning (@Lightning.Module.Version)</a></li>
-					<li class="muted">&middot;</li>
-					<li><a href="http://www.bootply.com/render/60343">Metroid Theme</a></li>
-				</ul>
+
+		@if (footer == null)
+		{
+			<div id="footer">
+				<div class="container">
+					<p>Code licensed under <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+					<ul class="footer-links">
+						<li><a href="/humans.txt">Humans</a></li>
+						<li class="muted">&middot;</li>
+						<li><a href="http://simpdev.net/lightning">Powered By Lightning (@Lightning.Module.Version)</a></li>
+						<li class="muted">&middot;</li>
+						<li><a href="http://www.bootply.com/render/60343">Metroid Theme</a></li>
+					</ul>
+				</div>
 			</div>
-		</div>
+		}
+		else
+		{
+			@Html.Raw(footer.GetContent(footer))
+		}
 
 		<!-- use cdn with fallback to local -->
 
