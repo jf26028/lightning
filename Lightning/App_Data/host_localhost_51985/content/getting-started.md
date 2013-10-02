@@ -17,11 +17,11 @@ Position:  200
 
 ###Download and hit F5
 
-The simplest way to get started and try Lightning out is to download the code from TODO:  url here.
+The simplest way to get started and try Lightning out is to download the code from [Codeplex](http://lightning.codeplex.com "Codeplex") or [Github](https://github.com/jf26028/lightning "github")
 
 * Download the bits.
 * Open in visual studio.
-* Change the files in the `/App_Data/content` folder.
+* Change the files in the `/App_Data/host_localhost_51985/content` folder.
 * Hit F5.
 
 TODO:  List other ways to get going here.
