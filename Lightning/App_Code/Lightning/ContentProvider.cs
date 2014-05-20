@@ -36,7 +36,7 @@ namespace Lightning
 					if (contents == null)
 					{
 						// The convention of this content provider is to look in the ~/App_Data/{host}/content folder for the content.
-						var contentVirtualPath = httpContext.GetHostPath("content/");
+						var contentVirtualPath = httpContext.GetHostDataPath("content/");
 						var contentPhysicalPath = httpContext.Server.MapPath(contentVirtualPath);
 
 						if (!Directory.Exists(contentPhysicalPath))

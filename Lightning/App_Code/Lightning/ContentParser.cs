@@ -40,15 +40,15 @@ namespace Lightning
 
 					// This is an implementation of lazy processing with caching.
 					// The content is processed with markdown only when it needs to be, and the result is cached on the content object.
-					contentFile.GetContent = new Func<dynamic, string>(content =>
+					contentFile.GetContent = new Func<dynamic>(() =>
 					{
 						// If this content has not been processed previously, process it now and cache the output to prevent from processing the same text more than once to get the same output.
-						if (content._contentProcessed == null)
+						if (contentFile._contentProcessed == null)
 						{
-							content._contentProcessed = this.processContent(content._content);
+							contentFile._contentProcessed = this.processContent(contentFile._content);
 						}
 
-						return content._contentProcessed;
+						return contentFile._contentProcessed;
 					});
 
 					break;

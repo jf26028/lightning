@@ -10,9 +10,7 @@ namespace Lightning
 	public class Module : IHttpModule
 	{
 		// semver of the system.
-		public static readonly string Version = "1.0.0";
-
-		private readonly object _lock = new object();
+		public static readonly string Version = "1.1.0";
 
 		public void Dispose()
 		{

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.WebPages;
@@ -31,14 +32,19 @@ namespace Lightning
 			}
 		}
 
+		public static dynamic GetContentBySlug(IEnumerable<dynamic> dyns, string slug)
+		{
+			return dyns.FirstOrDefault(c => c.Slug == "_footer");
+		}
+
 		// Request data is data parsed and processed by the HttpModule, for use in child pages and templates.  The current HttpContext is used to hold request data.
-		public static dynamic GetRequestData(HttpContextBase httpContext)
+		public static dynamic GetRequestData(this HttpContextBase httpContext)
 		{
 			return httpContext.Items[RequestDataKey];
 		}
 
 		// Used by the HttpModule to set the current request's data.
-		public static dynamic SetRequestData(HttpContextBase httpContext, dynamic value)
+		public static dynamic SetRequestData(this HttpContextBase httpContext, dynamic value)
 		{
 			httpContext.Items[RequestDataKey] = value;
 			return value;
@@ -68,7 +74,7 @@ namespace Lightning
 			return key;
 		}
 
-		public static string GetHostPath(this HttpContextBase httpContext, string additionalPath = "")
+		public static string GetHostDataPath(this HttpContextBase httpContext, string additionalPath = "")
 		{
 			var path = string.Format("~/App_Data/host_{0}/{1}", httpContext.GetHostKey(), additionalPath ?? "");
 			return path;
@@ -95,7 +101,7 @@ namespace Lightning
 					}
 					else
 					{
-						config = WebConfigurationManager.OpenWebConfiguration(httpContext.GetHostPath("config/"));
+						config = WebConfigurationManager.OpenWebConfiguration(httpContext.GetHostDataPath("config/"));
 						_configSections.Add(host, config);
 					}
 				}
